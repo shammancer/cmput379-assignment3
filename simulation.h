@@ -7,8 +7,8 @@ void init(int psize, int winsize);
 
 void put(unsigned int address, int value);
 
-int get(unsigned int address, int value);
+int get(unsigned int address);
 
-extern int wordsize;
+void done();
 
 #endif
