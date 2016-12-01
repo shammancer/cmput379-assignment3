@@ -3,3 +3,12 @@ echo CMPUT 379
 echo Assignment \#3
 echo Dannick Pomerleau 1388804
 echo Jessica Prieto 1412737
+
+echo Page Size: $1
+echo Window Size: $2
+echo Process: $3
+
+make PROC="$3" simulator
+mv simulator simulator.temp
+./simulator.temp $1 $2
+rm ./simulator.temp
