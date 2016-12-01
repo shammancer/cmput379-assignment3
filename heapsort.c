@@ -48,7 +48,7 @@ void printArray(int * arr, int size) {
 	int i = 0;
 	for(i=0; i< size ; i++) {
 		if(i > 0) {
-			printf(", ");
+			printf("\n");
 		}
 		printf("%i", arr[i]);
 	}
@@ -56,10 +56,10 @@ void printArray(int * arr, int size) {
 }
 
 int main() {
-	int numbers[10];
+	int numbers[20];
 	int i = 0;
 	for(i = 0; i<10; i++) {
-		numbers[i] = rand() % 20;
+		numbers[i] = rand() % 200000;
 		printf("%i ", numbers[i]);
 	}
 
