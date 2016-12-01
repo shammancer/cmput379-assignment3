@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// void qsort(int* array, int len);
+// void quicksort(int* array, int len);
 void printArray(int * arr, int size);
 
 void swap(int * arr, int i, int j) {
@@ -10,14 +10,20 @@ void swap(int * arr, int i, int j) {
 	arr[j] = buff;
 }
 
-// void qsort(int* array, int len) {
-//     if (len > 1) {
-//         int pivot_idx = pick_pivot(len);
-//         pivot_idx = partition( array, len, pivot_idx );
-//         qsort( array, pivot_idx );
-//         qsort( array+pivot_idx+1, len-pivot_idx-1 );
-//     }  
-// }
+int pick_pivot(int len) {
+	int random = rand() % len;
+	printf("random: %i \n", random);
+	return random;
+}
+
+void quicksort(int* array, int len) {
+    if (len > 1) {
+        int pivot_idx = pick_pivot(len);
+        pivot_idx = partition( array, len, pivot_idx );
+        quicksort( array, pivot_idx );
+        quicksort( array+pivot_idx+1, len-pivot_idx-1 );
+    }  
+}
 
 int partition( int* array, int len, int pivot_idx ) {
 	// 1. Put away the pivot by swapping it with the last element of 
@@ -35,36 +41,39 @@ int partition( int* array, int len, int pivot_idx ) {
 	//    return the final position.
 
 	swap(array, len-1, pivot_idx);
+	printf("after swap\n");
+	printArray(array, len);
+	printf("pivot: %i\n", array[len-1]);
 
 	int L = 0;
 	int R = len-2;
 	
 	while(L<R) {
-		int i=L;
-		while(i<len-1) {
-			if(array[i]>array[len-1]) {
-				L = i;
-				printf("L: %i\n", L);
+		while(L<len-1) {
+			if(array[L]>array[len-1]) {
+				// L = i;
+				// printf("L: %i\n", L);
 				break;
 			}
-			i++;
+			L++;
 		}
 
-		int j = R;
-		while(j>0) {
+		while(R>0) {
 			if(array[R]<array[len-1]) {
-				// printf("trigger\n");
-				R = j;
-				// printf("R: %i\n", R);
+				printf("trigger\n");
 				break;
 			}
-			j--;
+			R--;
 		}
-		// printf("L: %i R: %i\n", L, R);
-
+		if(L<len-2) L++;
+		if(R>0) R--;
+		printf("L: %i R: %i\n", L, R);
 
 		swap(array,L,R);
 	}
+	swap(array, R, len-1);
+	printArray(array, len);
+	return R;
 }
 
 void printArray(int * arr, int size) {
@@ -86,13 +95,15 @@ int main() {
 		printf("%i ", numbers[i]);
 	}
 
-	int pivot = rand() % 10;
+	int pivot = rand() % 8;
 	printf("\n");
-	printf("pivot: %i", numbers[pivot]);
+	// printf("pivot: %i", numbers[pivot]);
 	int arr_size = sizeof(numbers)/sizeof(int);
+
 	printf("\n");
 
-	partition(numbers, arr_size, pivot);
+	quicksort(numbers, arr_size);
+	// partition(numbers, arr_size, pivot);
 
 	printArray(numbers, arr_size);
 }
