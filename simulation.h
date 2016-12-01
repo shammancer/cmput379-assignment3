@@ -11,8 +11,7 @@ void done();
 // Data Structures
 typedef struct page {
     int* data;
-    unsigned int size;
-    unsigned int key;
+    int key;
 
     struct page* next;
 } page;
@@ -30,11 +29,13 @@ typedef struct page_map {
     size_t array_size;
     size_t pages_used;
 
-
 } page_map;
 
 // Helper functions
 void parse_args(int argc, char* argv[]);
 void save_state(page_map* map);
+
+page* get_page(page_map* map, unsigned int address);
+page* allocate_page(page_map* map, unsigned int address);
 
 #endif

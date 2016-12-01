@@ -4,10 +4,10 @@
 
 #include "simulation.h"
 
-size_t wordsize = sizeof(unsigned int);
+size_t word_size = sizeof(unsigned int);
 size_t window = 0;
-int windowsize = 0;
-int pagesize = 0;
+int window_size = 0;
+int page_size = 0;
 
 page_map* sim_map;
 
@@ -43,10 +43,15 @@ void init(int psize, int winsize){
 }
 
 void put(unsigned int address, int value){
-    int s;
+    page * p = get_page(sim_map, address);
+    if (p == NULL){
+        p = allocate_page(sim_map, address);
+    }
+
+    p->data[address % page_size] = value;
 
     window++;
-    if(window % windowsize == 0){
+    if(window % window_size == 0){
         save_state(sim_map);
     }
 }
@@ -54,12 +59,21 @@ void put(unsigned int address, int value){
 int get(unsigned int address){
     int s;
 
+    page* p = get_page(sim_map, address);
+
+    if(p == NULL){
+        fprintf(stdout, "Segmentation fault accessing memory at %d\n", address);
+        exit(-1);
+    }
+
+    s = p->data[address % page_size];
+
     window++;
-    if(window % windowsize == 0){
+    if(window % window_size == 0){
         save_state(sim_map);
     }
 
-    return 0;
+    return s;
 }
 
 void done(){
@@ -83,8 +97,8 @@ void parse_args(int argc, char* argv[]){
     }
     
     errno = 0;
-    pagesize = strtol(argv[1], NULL, 10);
-    windowsize = strtol(argv[2], NULL, 10);
+    page_size = strtol(argv[1], NULL, 10);
+    window_size = strtol(argv[2], NULL, 10);
 
     if (errno != 0) {
         fprintf(stderr, "Unable to parse arguments\n");
@@ -117,4 +131,50 @@ void save_state(page_map* map){
     }
 
     return;
+}
+
+page* get_page(page_map* map, unsigned int address){
+    page* cp = map->array[(address / page_size) % map->array_size];
+
+    while (cp != NULL) {
+        if (cp->key == address / page_size){
+            break;
+        }
+
+        cp = cp->next;
+    }
+
+    return cp;
+}
+
+page* allocate_page(page_map* map, unsigned int address){
+    // Alocate ressources for the page
+    page* p = malloc(sizeof(page));
+    if (p == NULL){
+        fprintf(stderr, "Unable to malloc new page.\n");
+        exit(-1);
+    }
+
+    p->key = address / page_size;
+    p->next = NULL;
+
+    p->data = malloc(page_size * word_size);
+    if (p->data == NULL){
+        fprintf(stderr, "Unable to malloc page data.\n");
+        exit(-1);
+    }
+
+
+    // Add it to the hashmap
+    page* cp = map->array[(address / page_size) % map->array_size];
+    if(cp == NULL){
+        map->array[(address / page_size) % map->array_size] = p;
+    } else {
+        while(cp->next != NULL){
+            cp = cp->next;
+        }
+        cp->next = p;
+    }
+
+    return p;
 }
