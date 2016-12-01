@@ -22,20 +22,35 @@ typedef struct history_entry {
     struct history_entry* next;
 } history_entry;
 
+typedef struct working_page {
+    unsigned int page_id;
+    
+    struct working_page* next;
+} working_page;
+
 typedef struct page_map {
     page** array;
-    history_entry* history_head;
-    size_t entries_saved;
     size_t array_size;
-    size_t pages_used;
 
+    struct working_page* working_set_head;
+    size_t set_size;
+
+    struct history_entry* history_head;
+    size_t entries_saved;
 } page_map;
 
 // Helper functions
 void parse_args(int argc, char* argv[]);
+
+void add_to_working_set(page_map* map, unsigned int address);
+void free_working_set(page_map* map);
 void save_state(page_map* map);
 
 page* get_page(page_map* map, unsigned int address);
 page* allocate_page(page_map* map, unsigned int address);
+
+void assert_address(unsigned int address);
+void assert_page_size(int ps);
+void assert_window_size(int ws);
 
 #endif

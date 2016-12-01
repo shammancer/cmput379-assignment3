@@ -4,7 +4,7 @@
 
 #include "simulation.h"
 
-size_t word_size = sizeof(unsigned int);
+size_t word_size = sizeof(int);
 size_t window = 0;
 int window_size = 0;
 int page_size = 0;
@@ -30,7 +30,7 @@ void init(int psize, int winsize){
 
     sim_map->history_head = NULL;
     sim_map->entries_saved = 0;
-    sim_map->pages_used = 0;
+    sim_map->set_size = 0;
 
     sim_map->array_size = array_size;
     sim_map->array = malloc(sizeof(page*) * array_size);
@@ -43,6 +43,8 @@ void init(int psize, int winsize){
 }
 
 void put(unsigned int address, int value){
+    assert_address(address);
+
     page * p = get_page(sim_map, address);
     if (p == NULL){
         p = allocate_page(sim_map, address);
@@ -50,6 +52,7 @@ void put(unsigned int address, int value){
 
     p->data[address % page_size] = value;
 
+    add_to_working_set(sim_map, address);
     window++;
     if(window % window_size == 0){
         save_state(sim_map);
@@ -58,6 +61,8 @@ void put(unsigned int address, int value){
 
 int get(unsigned int address){
     int s;
+
+    assert_address(address);
 
     page* p = get_page(sim_map, address);
 
@@ -68,6 +73,7 @@ int get(unsigned int address){
 
     s = p->data[address % page_size];
 
+    add_to_working_set(sim_map, address);
     window++;
     if(window % window_size == 0){
         save_state(sim_map);
@@ -77,22 +83,27 @@ int get(unsigned int address){
 }
 
 void done(){
+    // Save last state
+    save_state(sim_map);
+
     history_entry* he = sim_map->history_head;
     size_t sum = 0;
+    fprintf(stdout, "=============================\n");
     fprintf(stdout, "Working Set Size History, ");
     while (he != NULL){
         fprintf(stdout, "%d, ", he->pages_used);
         sum += he->pages_used;
+        he = he->next;
     }
-    size_t average = sum / sim_map->entries_saved;
-    fprintf(stdout, "Average Working Set Size, %d\n", average);
+    double  average = (double) sum / (double) sim_map->entries_saved;
+    fprintf(stdout, "\nAverage Working Set Size, %f\n", average);
 
     return;
 }
 
 void parse_args(int argc, char* argv[]){
-    if (argc != 4) {
-        fprintf(stderr, "Must be invoked using: sim <psize> <winsize> <process>\n");
+    if (argc != 3) {
+        fprintf(stderr, "Arguments not passed correctly\n");
         exit(-1);
     }
     
@@ -115,8 +126,10 @@ void save_state(page_map* map){
         exit(-1);
     }
 
-    ne->pages_used = map->pages_used;
+    ne->pages_used = map->set_size;
     ne->next = NULL;
+
+    free_working_set(map);
 
     map->entries_saved += 1;
 
@@ -164,7 +177,6 @@ page* allocate_page(page_map* map, unsigned int address){
         exit(-1);
     }
 
-
     // Add it to the hashmap
     page* cp = map->array[(address / page_size) % map->array_size];
     if(cp == NULL){
@@ -177,4 +189,78 @@ page* allocate_page(page_map* map, unsigned int address){
     }
 
     return p;
+}
+
+void free_working_set(page_map* map){
+    map->set_size = 0;
+
+    working_page* cwp = map->working_set_head;
+    working_page* nwp;
+
+    map->working_set_head = NULL;
+
+    while(cwp != NULL){
+        nwp = cwp->next;
+        free(cwp);
+        cwp = nwp;
+    }
+}
+
+void add_to_working_set(page_map* map, unsigned int address){
+    int found = 0;
+    working_page* wp = malloc(sizeof(wp));
+    if(wp == NULL){
+        fprintf(stderr, "Unable to allocate new working page\n");
+        exit(-1);
+    }
+    wp->page_id = address / page_size;
+    wp->next = NULL;
+
+    working_page* cwp = map->working_set_head;
+
+    if(cwp == NULL){
+        map->working_set_head = wp;
+        map->set_size = 1;
+    } else {
+        found = 0;
+
+        while(cwp->next != NULL){
+
+            if (cwp->page_id == wp->page_id){
+                found = 1;
+                break;   
+            }
+
+            cwp = cwp->next;
+        }
+
+        if(found == 0){
+            cwp->next = wp;
+            map->set_size = map->set_size + 1;
+        }
+    }
+}
+
+// Input Assertions
+// =================================================
+
+void assert_address(unsigned int address){
+    if(address <= 0 && address >= 33554431){
+        fprintf(stderr, "Address is in invalid range.");
+        exit(-1);
+    }
+}
+
+void assert_page_size(int ps){
+    if(ps <= 0){
+        fprintf(stderr, "Page Size is Invalid.");
+        exit(-1);
+    }
+}
+
+void assert_window_size(int ws){
+    if(ws <= 0){
+        fprintf(stderr, "Window Size is Invalid.");
+        exit(-1);
+    }
 }
