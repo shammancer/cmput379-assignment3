@@ -43,7 +43,7 @@ void init(int psize, int winsize){
 }
 
 void put(unsigned int address, int value){
-    assert_address(address);
+    //assert_address(address);
 
     page * p = get_page(sim_map, address);
     if (p == NULL){
@@ -62,7 +62,7 @@ void put(unsigned int address, int value){
 int get(unsigned int address){
     int s;
 
-    assert_address(address);
+    //assert_address(address);
 
     page* p = get_page(sim_map, address);
 
@@ -224,11 +224,14 @@ void add_to_working_set(page_map* map, unsigned int address){
     } else {
         found = 0;
 
-        while(cwp->next != NULL){
-
+        while(1){
             if (cwp->page_id == wp->page_id){
-                found = 1;
-                break;   
+                free(wp);
+                return;
+            }
+
+            if (cwp->next == NULL){
+                break;
             }
 
             cwp = cwp->next;

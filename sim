@@ -4,6 +4,11 @@ echo Assignment \#3
 echo Dannick Pomerleau 1388804
 echo Jessica Prieto 1412737
 
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 <page_size> <window_size> <process>" >&2
+    exit 1
+fi
+
 echo Page Size: $1
 echo Window Size: $2
 echo Process: $3
