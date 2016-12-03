@@ -100,7 +100,7 @@ void done(){
     double  average = (double) sum / (double) sim_map->entries_saved;
 
     fprintf(stdout, "=============================\n");
-    fprintf(stdout, "Working Set History Size: %d\n", sim_map->entries_saved);
+    fprintf(stdout, "Working Set History Size: %zd\n", sim_map->entries_saved);
     fprintf(stdout, "Average Working Set Size: %f\n", average);
     fprintf(stdout, "Page Count: %zd\n", sim_map->page_count);
 
