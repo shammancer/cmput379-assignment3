@@ -7,26 +7,22 @@
 
 int lastleaf = 0;
 
-void heapify(unsigned int node);
+void heapify(int node);
 
-void swap(unsigned int i, unsigned int j) {
-	// int buff = arr[i];
-	// arr[i] = arr[j];
-	// arr[j] = buff;
-	unsigned int buff = get(i);
+void swap(int i, int j) {
+	int buff = get(i);
 	put(i,get(j));
 	put(j,buff);
 }
 
 void sort(size_t len) {
-	unsigned int size = (unsigned int)len;
-	printf("size (in sort): %i\n", size);
+	int size = (int)len;
 	lastleaf = size - 1;
-	unsigned int j = 0;
+	int j = 0;
 	for (j = lastleaf/2; j >= 0; j--) {
 		heapify(j);
 	} 
-	unsigned int i = 0;
+	int i = 0;
 	for (i = lastleaf; i>0; i--) {
 		swap(0, i);
 		lastleaf = lastleaf - 1;
@@ -34,10 +30,10 @@ void sort(size_t len) {
 	}
 }
 
-void heapify(unsigned int node) {
-	unsigned int left = (node*2) + 1;
-	unsigned int right = (node*2) + 2;
-	unsigned int greater = node;
+void heapify(int node) {
+	int left = (node*2) + 1;
+	int right = (node*2) + 2;
+	int greater = node;
 	if(left<=lastleaf) {
 		if(get(left)>get(greater)) {
 			swap(left, node);
@@ -52,16 +48,16 @@ void heapify(unsigned int node) {
 	}
 }
 
-// void printArray(int * arr, int size) {
-// 	int i = 0;
-// 	for(i=0; i< size ; i++) {
-// 		if(i > 0) {
-// 			printf("\n");
-// 		}
-// 		printf("%i", arr[i]);
-// 	}
-// 	printf("\n");
-// }
+void printArray(int size) {
+	int i = 0;
+	for(i=0; i< size ; i++) {
+		if(i > 0) {
+			printf("\n");
+		}
+		printf("%i", get(i));
+	}
+	printf("\n");
+}
 
 void process() {
 	int N, i, j, k, t, min, f;
@@ -76,15 +72,13 @@ void process() {
 
 	for(i=0; i<N; i++) put(i, lrand48 ());
 
-	printf("done loop\n");
-
 	start = clock();
-	// size_t size = map->array_size;
 	size_t size = N;
 
-	printf("size: %i\n", (int)map->array_size);
-
-	sort(size);
+	sort(N);
+	// printf("printing array: \n");
+	// printArray(N);
+	// printf("doneprinting\n");
 
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
@@ -93,3 +87,4 @@ void process() {
 
     done();
 }
+
