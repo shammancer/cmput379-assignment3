@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
 
 void init(int psize, int winsize){
     // ignore psize and winsize
-    const size_t array_size = 1024;
+    const size_t array_size = 256;
 
     sim_map = malloc(sizeof(page_map));
     if(sim_map == NULL){
@@ -33,6 +33,7 @@ void init(int psize, int winsize){
     sim_map->history_head = NULL;
     sim_map->entries_saved = 0;
     sim_map->set_size = 0;
+    sim_map->page_count = 0;
 
     sim_map->array_size = array_size;
     sim_map->array = malloc(sizeof(page*) * array_size);
@@ -45,8 +46,6 @@ void init(int psize, int winsize){
 }
 
 void put(unsigned int address, int value){
-    //assert_address(address);
-
     page * p = get_page(sim_map, address);
     if (p == NULL){
         p = allocate_page(sim_map, address);
@@ -63,8 +62,6 @@ void put(unsigned int address, int value){
 
 int get(unsigned int address){
     int s;
-
-    //assert_address(address);
 
     page* p = get_page(sim_map, address);
 
@@ -86,22 +83,26 @@ int get(unsigned int address){
 
 void done(){
     // Save last state
-    fprintf(stdout, "Simulation Done\n");
     save_state(sim_map);
-    fprintf(stdout, "Saved Last Entry\n");
 
     history_entry* he = sim_map->history_head;
     size_t sum = 0;
-    fprintf(stdout, "=============================\n");
-    fprintf(stdout, "Working Set History Size: %d\n", sim_map->entries_saved);
-    fprintf(stdout, "Working Set History, ");
+    FILE* fhist = fopen("sim_history.csv", "w+");
+    fprintf(fhist, "Working Set History\n");
     while (he != NULL){
-        fprintf(stdout, "%d, ", he->pages_used);
+        fprintf(fhist, "%ll\n", he->pages_used);
         sum += he->pages_used;
         he = he->next;
     }
+    fflush(fhist);
+    fclose(fhist);
+
     double  average = (double) sum / (double) sim_map->entries_saved;
-    fprintf(stdout, "\nAverage Working Set Size, %f\n", average);
+
+    fprintf(stdout, "=============================\n");
+    fprintf(stdout, "Working Set History Size: %d\n", sim_map->entries_saved);
+    fprintf(stdout, "Average Working Set Size: %f\n", average);
+    fprintf(stdout, "Page Count: %ll\n", sim_map->page_count);
 
     return;
 }
@@ -153,7 +154,7 @@ page* get_page(page_map* map, unsigned int address){
     page* cp = map->array[(address / page_size) % map->array_size];
 
     while (cp != NULL) {
-        if (cp->key == address / page_size){
+        if (cp->key >= address / page_size){
             break;
         }
 
@@ -171,6 +172,7 @@ page* allocate_page(page_map* map, unsigned int address){
         exit(-1);
     }
 
+    int key = address / page_size; 
     p->key = address / page_size;
     p->next = NULL;
 
@@ -185,11 +187,17 @@ page* allocate_page(page_map* map, unsigned int address){
     if(cp == NULL){
         map->array[(address / page_size) % map->array_size] = p;
     } else {
-        while(cp->next != NULL){
+        while(1){
+            if(cp->next == NULL || cp->next->key > key){
+                break;
+            }
             cp = cp->next;
         }
+        p->next = cp->next;
         cp->next = p;
     }
+
+    map->page_count = map->page_count+1;
 
     return p;
 }
@@ -228,12 +236,12 @@ void add_to_working_set(page_map* map, unsigned int address){
         found = 0;
 
         while(1){
-            if (cwp->page_id == wp->page_id){
+            if(cwp->page_id == wp->page_id){
                 free(wp);
                 return;
             }
 
-            if (cwp->next == NULL){
+            if(cwp->next == NULL){
                 break;
             }
 
@@ -249,14 +257,6 @@ void add_to_working_set(page_map* map, unsigned int address){
 
 // Input Assertions
 // =================================================
-
-void assert_address(unsigned int address){
-    if(address <= 0 && address >= 33554431){
-        fprintf(stderr, "Address is in invalid range.");
-        exit(-1);
-    }
-}
-
 void assert_page_size(int ps){
     if(ps <= 0){
         fprintf(stderr, "Page Size is Invalid.");

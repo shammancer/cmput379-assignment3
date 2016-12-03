@@ -31,6 +31,7 @@ typedef struct working_page {
 typedef struct page_map {
     page** array;
     size_t array_size;
+    size_t page_count;
 
     struct working_page* working_set_head;
     size_t set_size;
@@ -50,7 +51,6 @@ void save_state(page_map* map);
 page* get_page(page_map* map, unsigned int address);
 page* allocate_page(page_map* map, unsigned int address);
 
-void assert_address(unsigned int address);
 void assert_page_size(int ps);
 void assert_window_size(int ws);
 
