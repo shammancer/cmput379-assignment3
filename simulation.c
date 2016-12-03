@@ -90,7 +90,7 @@ void done(){
     FILE* fhist = fopen("sim_history.csv", "w+");
     fprintf(fhist, "Working Set History\n");
     while (he != NULL){
-        fprintf(fhist, "%ll\n", he->pages_used);
+        fprintf(fhist, "%zd\n", he->pages_used);
         sum += he->pages_used;
         he = he->next;
     }
@@ -102,7 +102,7 @@ void done(){
     fprintf(stdout, "=============================\n");
     fprintf(stdout, "Working Set History Size: %d\n", sim_map->entries_saved);
     fprintf(stdout, "Average Working Set Size: %f\n", average);
-    fprintf(stdout, "Page Count: %ll\n", sim_map->page_count);
+    fprintf(stdout, "Page Count: %zd\n", sim_map->page_count);
 
     return;
 }
