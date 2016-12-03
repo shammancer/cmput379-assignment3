@@ -1,6 +1,10 @@
 # VIM Temp files
 *.swp
 
+# Generated Comma Seperated Value Files
+*.csv
+*.csv#
+
 # Object files
 *.o
 *.ko
