@@ -60,7 +60,7 @@ void printArray(int size) {
 }
 
 void process() {
-	int N, i, j, k, t, min, f;
+	int N, i;
 	clock_t start, diff;
 	double msec;
 
@@ -71,16 +71,17 @@ void process() {
     page_map * map = get_map();
 
 	for(i=0; i<N; i++) put(i, lrand48 ());
-
-	start = clock();
+	
 	size_t size = N;
-
+	
+	start = clock();
 	sort(N);
+    diff = clock() - start;
+
 	// printf("printing array: \n");
 	// printArray(N);
 	// printf("doneprinting\n");
 
-    diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
     printf("T1 %f ms\n", msec);
     fflush(stdout);
