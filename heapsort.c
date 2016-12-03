@@ -1,72 +1,95 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+#include <time.h>
+
+#include "simulation.h"
 
 int lastleaf = 0;
 
-void heapify(int arr[], int node);
+void heapify(unsigned int node);
 
-void swap(int * arr, int i, int j) {
-	int buff = arr[i];
-	arr[i] = arr[j];
-	arr[j] = buff;
+void swap(unsigned int i, unsigned int j) {
+	// int buff = arr[i];
+	// arr[i] = arr[j];
+	// arr[j] = buff;
+	unsigned int buff = get(i);
+	put(i,get(j));
+	put(j,buff);
 }
 
-void sort(int numbers[], int size) {
+void sort(size_t len) {
+	unsigned int size = (unsigned int)len;
 	printf("size (in sort): %i\n", size);
 	lastleaf = size - 1;
-	int j = 0;
+	unsigned int j = 0;
 	for (j = lastleaf/2; j >= 0; j--) {
-		heapify(numbers,j);
+		heapify(j);
 	} 
-	int i = 0;
+	unsigned int i = 0;
 	for (i = lastleaf; i>0; i--) {
-		swap(numbers, 0, i);
+		swap(0, i);
 		lastleaf = lastleaf - 1;
-		heapify(numbers, 0);
+		heapify(0);
 	}
 }
 
-void heapify(int arr[], int node) {
-	int left = (node*2) + 1;
-	int right = (node*2) + 2;
-	int greater = node;
+void heapify(unsigned int node) {
+	unsigned int left = (node*2) + 1;
+	unsigned int right = (node*2) + 2;
+	unsigned int greater = node;
 	if(left<=lastleaf) {
-		if(arr[left]>arr[greater]) {
-			swap(arr, left, node);
-			heapify(arr,left);
+		if(get(left)>get(greater)) {
+			swap(left, node);
+			heapify(left);
 		}
 	}
 	if(right<=lastleaf) {
-		if(arr[right]>arr[greater]) {
-			swap(arr, right, node);
-			heapify(arr, right);
+		if(get(right)>get(greater)) {
+			swap(right, node);
+			heapify(right);
 		}
 	}
 }
 
-void printArray(int * arr, int size) {
-	int i = 0;
-	for(i=0; i< size ; i++) {
-		if(i > 0) {
-			printf("\n");
-		}
-		printf("%i", arr[i]);
-	}
-	printf("\n");
-}
+// void printArray(int * arr, int size) {
+// 	int i = 0;
+// 	for(i=0; i< size ; i++) {
+// 		if(i > 0) {
+// 			printf("\n");
+// 		}
+// 		printf("%i", arr[i]);
+// 	}
+// 	printf("\n");
+// }
 
-int main() {
-	int numbers[20];
-	int i = 0;
-	for(i = 0; i<10; i++) {
-		numbers[i] = rand() % 200000;
-		printf("%i ", numbers[i]);
-	}
+void process() {
+	int N, i, j, k, t, min, f;
+	clock_t start, diff;
+	double msec;
 
-	int arr_size = sizeof(numbers)/sizeof(int);
-	printf("\n");
+	scanf("%d", &N);
+	printf("Sorting %1d keys\n", N);
+    init (128, 1000);
 
-	sort(numbers, arr_size);
+    page_map * map = get_map();
 
-	printArray(numbers, arr_size);
+	for(i=0; i<N; i++) put(i, lrand48 ());
+
+	printf("done loop\n");
+
+	start = clock();
+	// size_t size = map->array_size;
+	size_t size = N;
+
+	printf("size: %i\n", (int)map->array_size);
+
+	sort(size);
+
+    diff = clock() - start;
+    msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("T1 %f ms\n", msec);
+    fflush(stdout);
+
+    done();
 }
