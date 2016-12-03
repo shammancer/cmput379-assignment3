@@ -51,6 +51,8 @@ void save_state(page_map* map);
 page* get_page(page_map* map, unsigned int address);
 page* allocate_page(page_map* map, unsigned int address);
 
+page_map * get_map();
+
 void assert_page_size(int ps);
 void assert_window_size(int ws);
 
