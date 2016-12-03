@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <time.h>
+
 #include "simulation.h"
 
 size_t word_size = sizeof(int);
@@ -84,12 +86,15 @@ int get(unsigned int address){
 
 void done(){
     // Save last state
+    fprintf(stdout, "Simulation Done\n");
     save_state(sim_map);
+    fprintf(stdout, "Saved Last Entry\n");
 
     history_entry* he = sim_map->history_head;
     size_t sum = 0;
     fprintf(stdout, "=============================\n");
-    fprintf(stdout, "Working Set Size History, ");
+    fprintf(stdout, "Working Set History Size: %d\n", sim_map->entries_saved);
+    fprintf(stdout, "Working Set History, ");
     while (he != NULL){
         fprintf(stdout, "%d, ", he->pages_used);
         sum += he->pages_used;
@@ -135,12 +140,10 @@ void save_state(page_map* map){
 
     if (map->history_head == NULL){
         map->history_head = ne;
+        map->history_tail = ne;
     } else {
-        history_entry* ce = map->history_head;
-        while (ce->next != NULL){
-            ce = ce->next;
-        }
-        ce->next = ne;
+        map->history_tail->next = ne;
+        map->history_tail = ne;
     }
 
     return;

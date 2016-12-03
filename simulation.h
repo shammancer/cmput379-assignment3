@@ -36,6 +36,7 @@ typedef struct page_map {
     size_t set_size;
 
     struct history_entry* history_head;
+    struct history_entry* history_tail;
     size_t entries_saved;
 } page_map;
 
