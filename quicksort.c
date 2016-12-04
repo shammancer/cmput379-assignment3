@@ -5,13 +5,21 @@
 
 #include "simulation.h"
 
-void q_sort(page** array, size_t size);
+void q_sort(int array, size_t size);
 // void printArray(int * arr, int size);
 
-void swap(unsigned int i, unsigned int j) {
-	// int buff = arr[i];
-	// arr[i] = arr[j];
-	// arr[j] = buff;
+void printArray(int array, int size) {
+    int i = 0;
+    for(i=0; i< size ; i++) {
+        if(i > 0) {
+            printf("\n");
+        }
+        printf("%i", get(array + i));
+    }
+    printf("\n");
+}
+
+void swap(int i, int j) {
 	int buff = get(i);
 	put(i,get(j));
 	put(j,buff);
@@ -19,55 +27,44 @@ void swap(unsigned int i, unsigned int j) {
 
 int pick_pivot(size_t len) {
 	int size = (int)len;
-	int random = rand() % size;
+	int random = lrand48() % size;
+    printf("pivot idx: %i\n", random);
 	return random;
 }
 
-void q_sort(page** array, size_t size) {
+void q_sort(int array, size_t size) {
 	int len = (int)size;
     if (len > 1) {
-        int pivot_idx = pick_pivot(len);
-        pivot_idx = partition(len, pivot_idx);
+        int pivot_idx = pick_pivot(size);
+        pivot_idx = partition(array, size, pivot_idx);
         q_sort( array, (size_t)pivot_idx);
         q_sort( array+pivot_idx+1, (size_t)len-pivot_idx-1);
     }  
 }
 
-int partition(page** array, size_t size, int pivot_idx ) {
-	int len = (int)size;
-	swap(len-1, pivot_idx);
+int partition( int array, int len, int pivot_idx ) {
+	swap(array + len-1, array + pivot_idx);
 
-	unsigned int L = 0;
-	unsigned int R = len-2;
+	int L = 0;
+	int R = len-2;
 
 	while(L < R) {
-		while(get(L) < get(len-1)) L++;
+		while(get(array + L) < get(array + len - 1)) L++;
 
-		while(get(R) > get(len-1)) R--;
+		while(get(array + R) > get(array + len - 1))R--;
 
 		// printf("L: %i R: %i\n", L, R);
-		if (L<R) swap(L,R);
+		if (L<R) swap(array + L, array + R);
 		// printArray(array, len);
 	}
 
 	int i = 0;
-	while (get(i) < get(len-1)) {
+	while (get(array + i) < get(array + len - 1)) {
 		i++;
 	}
-	swap(i, len-1);
+	swap(array + i, array + len-1);
 	return i;
 }
-
-// void printArray(page** arr, int size) {
-// 	int i = 0;
-// 	for(i=0; i< size ; i++) {
-// 		if(i > 0) {
-// 			printf("\n");
-// 		}
-// 		printf("%i", get(i));
-// 	}
-// 	printf("\n");
-// }
 
 void process() {
 	int N, i, j, k, t, min, f;
@@ -78,18 +75,22 @@ void process() {
 	printf("Sorting %1d keys\n", N);
     init (128, 1000);
 
+    page_map * map = get_map();
+
 	for(i=0; i<N; i++) put(i, lrand48 ());
 
-	printf("done loop\n");
+	size_t size = N;
 
-	start = clock();
-    page_map * map = get_map();
-	size_t size = map->array_size;
-	printf("size: %i", (int)map->array_size);
-
-	q_sort(map->array, size);
-
+    start = clock();
+    printArray(0, N);
+	q_sort(0, size);
+    // partition(map->array, size, 20);
     diff = clock() - start;
+
+    printf("printing array: \n");
+    printArray(0, N);
+    printf("done printing\n");
+
     msec = diff * 1000 / CLOCKS_PER_SEC;
     printf("T1 %f ms\n", msec);
     fflush(stdout);
