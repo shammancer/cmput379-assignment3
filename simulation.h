@@ -22,18 +22,12 @@ typedef struct history_entry {
     struct history_entry* next;
 } history_entry;
 
-typedef struct working_page {
-    unsigned int page_id;
-    
-    struct working_page* next;
-} working_page;
-
 typedef struct page_map {
     page** array;
     size_t array_size;
     size_t page_count;
 
-    struct working_page* working_set_head;
+    int * current_working_set;
     size_t set_size;
 
     struct history_entry* history_head;

@@ -42,7 +42,13 @@ void init(int psize, int winsize){
         fprintf(stderr, "Can't malloc page hashtable\n");
         exit(-1);
     }
-    
+
+    sim_map->current_working_set = malloc(sizeof(int) * window_size);
+
+    if(sim_map->array == NULL){
+        fprintf(stderr, "Can't malloc working set array\n");
+        exit(-1);
+    }
 }
 
 void put(unsigned int address, int value){
@@ -135,7 +141,7 @@ void save_state(page_map* map){
     ne->pages_used = map->set_size;
     ne->next = NULL;
 
-    free_working_set(map);
+    map->set_size = 0; // free current working set
 
     map->entries_saved += 1;
 
@@ -202,56 +208,21 @@ page* allocate_page(page_map* map, unsigned int address){
     return p;
 }
 
-void free_working_set(page_map* map){
-    map->set_size = 0;
-
-    working_page* cwp = map->working_set_head;
-    working_page* nwp;
-
-    map->working_set_head = NULL;
-
-    while(cwp != NULL){
-        nwp = cwp->next;
-        free(cwp);
-        cwp = nwp;
-    }
-}
-
 void add_to_working_set(page_map* map, unsigned int address){
+    int key = address / page_size;
     int found = 0;
-    working_page* wp = malloc(sizeof(wp));
-    if(wp == NULL){
-        fprintf(stderr, "Unable to allocate new working page\n");
-        exit(-1);
+    int i = 0;
+
+    for(i = 0; i < map->set_size; i++){
+        if(map->current_working_set[i] == key){
+            found = 1;
+            break;
+        }
     }
-    wp->page_id = address / page_size;
-    wp->next = NULL;
 
-    working_page* cwp = map->working_set_head;
-
-    if(cwp == NULL){
-        map->working_set_head = wp;
-        map->set_size = 1;
-    } else {
-        found = 0;
-
-        while(1){
-            if(cwp->page_id == wp->page_id){
-                free(wp);
-                return;
-            }
-
-            if(cwp->next == NULL){
-                break;
-            }
-
-            cwp = cwp->next;
-        }
-
-        if(found == 0){
-            cwp->next = wp;
-            map->set_size = map->set_size + 1;
-        }
+    if(found == 0){
+        map->current_working_set[i] = key;
+        map->set_size = map->set_size + 1;
     }
 }
 
