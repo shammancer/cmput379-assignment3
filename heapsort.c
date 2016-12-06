@@ -78,9 +78,9 @@ void process() {
 	sort(N);
     diff = clock() - start;
 
-	// printf("printing array: \n");
-	// printArray(N);
-	// printf("doneprinting\n");
+	printf("printing array: \n");
+	printArray(N);
+	printf("doneprinting\n");
 
     msec = diff * 1000 / CLOCKS_PER_SEC;
     printf("T1 %f ms\n", msec);
