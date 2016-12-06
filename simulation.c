@@ -94,7 +94,6 @@ void done(){
     history_entry* he = sim_map->history_head;
     size_t sum = 0;
     FILE* fhist = fopen("sim_history.csv", "w+");
-    fprintf(fhist, "Working Set History\n");
     while (he != NULL){
         fprintf(fhist, "%zd\n", he->pages_used);
         sum += he->pages_used;
@@ -108,7 +107,7 @@ void done(){
     fprintf(stdout, "=============================\n");
     fprintf(stdout, "Working Set History Size: %zd\n", sim_map->entries_saved);
     fprintf(stdout, "Average Working Set Size: %f\n", average);
-    fprintf(stdout, "Page Count: %zd\n", sim_map->page_count);
+    fprintf(stdout, "Page Count: %zd\n\n", sim_map->page_count);
 
     return;
 }

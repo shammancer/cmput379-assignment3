@@ -12,7 +12,8 @@ void process () {
     clock_t start, diff;
     double msec;
 
-    scanf ("%d", &N);
+    N = 4096;
+    //scanf ("%d", &N);
     printf ("Sorting %1d keys\n", N);
     init (128, 1000);
 

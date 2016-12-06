@@ -4,8 +4,9 @@ echo Assignment \#3
 echo Dannick Pomerleau 1388804
 echo Jessica Prieto 1412737
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -lt 3 ]; then
     echo "Usage: $0 <page_size> <window_size> <process>" >&2
+    echo "Usage with silent history: $0 <page_size> <window_size> <process> -s" >&2
     exit 1
 fi
 
@@ -16,3 +17,10 @@ echo Process: $3
 make PROC="$3" simulator
 mv simulator simulator.temp
 ./simulator.temp $1 $2
+
+
+if [ "$#" -eq 3 ]; then
+  echo History of Pages Touched
+  cat sim_history.csv
+  echo To silence history add -s to the end of the invocation
+fi
