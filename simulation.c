@@ -225,10 +225,6 @@ void add_to_working_set(page_map* map, unsigned int address){
     }
 }
 
-page_map * get_map() {
-    return sim_map;
-}
-
 // Input Assertions
 // =================================================
 void assert_page_size(int ps){
