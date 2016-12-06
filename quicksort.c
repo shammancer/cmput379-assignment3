@@ -5,8 +5,8 @@
 
 #include "simulation.h"
 
-void q_sort(int array, size_t size);
-// void printArray(int * arr, int size);
+
+
 
 void printArray(int array, int size) {
     int i = 0;
@@ -32,17 +32,21 @@ int pick_pivot(size_t len) {
 	return random;
 }
 
-void q_sort(int array, size_t size) {
-	int len = (int)size;
-    if (len > 1) {
-        int pivot_idx = pick_pivot(size);
-        pivot_idx = partition(array, size, pivot_idx);
-        q_sort( array, (size_t)pivot_idx);
-        q_sort( array+pivot_idx+1, (size_t)len-pivot_idx-1);
-    }  
+void q_sort(int begin, int end) {
+    // if (len > 1) {
+    //     int pivot_idx = (array+len)/2;
+    //     pivot_idx = partition(array, len, pivot_idx);
+    //     q_sort( array, pivot_idx);
+    //     q_sort( array+pivot_idx+1, len-pivot_idx-1);
+    // }  
+	printf("begin: %i end: %i\n", begin, end);
+	int pivot = inPlacePartitioning(begin, end);
+	q_sort(begin, pivot-1);
+	q_sort(pivot+1, end);
 }
 
-int partition( int array, int len, int pivot_idx ) {
+int partition( int array, int len) {
+	int pivot_idx = (array+len)/2;
 	swap(array + len-1, array + pivot_idx);
 
 	int L = 0;
@@ -66,8 +70,25 @@ int partition( int array, int len, int pivot_idx ) {
 	return i;
 }
 
+int inPlacePartitioning(int begin, int end) {
+	printf("partitioning\n");
+
+	int pivotIndex = (begin+end)/2;
+	int pivot = get(pivotIndex);
+	while(begin <= end) {
+		if( (get(begin) >= pivot) && (get(end) < pivot) ) {
+			swap(begin, end);
+		}
+		
+		if(get(begin) < pivot) begin++;
+		if(get(end) >= pivot) end--;
+		
+	}
+	return begin;
+}
+
 void process() {
-	int N, i, j, k, t, min, f;
+	int N, i;
 	clock_t start, diff;
 	double msec;
 
@@ -75,15 +96,13 @@ void process() {
 	printf("Sorting %1d keys\n", N);
     init (128, 1000);
 
-    page_map * map = get_map();
+    // page_map * map = get_map();
 
 	for(i=0; i<N; i++) put(i, lrand48 ());
 
-	size_t size = N;
-
     start = clock();
     printArray(0, N);
-	q_sort(0, size);
+	q_sort(0, N);
     // partition(map->array, size, 20);
     diff = clock() - start;
 
