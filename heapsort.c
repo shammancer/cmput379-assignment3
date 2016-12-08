@@ -67,7 +67,7 @@ void process() {
 	//scanf("%d", &N);
 	//printf("Sorting %1d keys\n", N);
     init (128, 1000);
-    N = 2048;
+    N = 10000;
 
 	for(i=0; i<N; i++) put(i, lrand48 ());
 	
