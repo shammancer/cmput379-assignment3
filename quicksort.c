@@ -59,9 +59,9 @@ int partition( int array, int len) {
 
 		while(get(R) > get(array + len - 1)) R--;
 
-		printf("L: %i R: %i\n", L, R);
+		// printf("L: %i R: %i\n", L, R);
 		if ((L<R) && (L<=array+len-2) && (R>=array)) swap(L, R);
-		printArray(array, len);
+		// printArray(array, len);
 	}
 
 	int i = 0;
@@ -94,26 +94,25 @@ void process() {
 	clock_t start, diff;
 	double msec;
 
-	scanf("%d", &N);
-	printf("Sorting %1d keys\n", N);
+	// scanf("%d", &N);
+	// printf("Sorting %1d keys\n", N);
     init (128, 1000);
 
     // page_map * map = get_map();
-
+    N = 10000;
 	for(i=0; i<N; i++) put(i, lrand48 ());
-
     start = clock();
-    printArray(0, N);
+    // printArray(0, N);
 	q_sort(0, N);
     // partition(0, N);
     diff = clock() - start;
 
-    printf("printing array: \n");
-    printArray(0,N);
-    printf("done printing\n");
+    // printf("printing array: \n");
+    // printArray(0,N);
+    // printf("done printing\n");
 
     msec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("T1 %f ms\n", msec);
+    // printf("T1 %f ms\n", msec);
     fflush(stdout);
 
     done();

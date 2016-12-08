@@ -1,0 +1,68 @@
+CMPUT 379
+Assignment #3
+Dannick Pomerleau 1388804
+Jessica Prieto 1412737
+Page Size: 128
+Window Size: 64
+Process: heapsort
+gcc simulation.c heapsort.c -o simulator
+Sorting 300 keys
+T1 4.000000 ms
+=============================
+Working Set History Size: 1944
+Average Working Set Size: 1.606996
+Page Count: 3
+
+CMPUT 379
+Assignment #3
+Dannick Pomerleau 1388804
+Jessica Prieto 1412737
+Page Size: 128
+Window Size: 128
+Process: heapsort
+gcc simulation.c heapsort.c -o simulator
+Sorting 20 keys
+T1 0.000000 ms
+=============================
+Working Set History Size: 8
+Average Working Set Size: 1.000000
+Page Count: 1
+
+CMPUT 379
+Assignment #3
+Dannick Pomerleau 1388804
+Jessica Prieto 1412737
+Page Size: 128
+Window Size: 256
+Process: heapsort
+gcc simulation.c heapsort.c -o simulator
+Sorting 18 keys
+T1 0.000000 ms
+=============================
+Working Set History Size: 4
+Average Working Set Size: 1.000000
+Page Count: 1
+
+CMPUT 379
+Assignment #3
+Dannick Pomerleau 1388804
+Jessica Prieto 1412737
+Page Size: 128
+Window Size: 512
+Process: heapsort
+gcc simulation.c heapsort.c -o simulator
+Sorting 600 keys
+T1 15.000000 ms
+=============================
+Working Set History Size: 947
+Average Working Set Size: 3.052798
+Page Count: 5
+
+CMPUT 379
+Assignment #3
+Dannick Pomerleau 1388804
+Jessica Prieto 1412737
+Page Size: 256
+Window Size: 64
+Process: heapsort
+gcc simulation.c heapsort.c -o simulator

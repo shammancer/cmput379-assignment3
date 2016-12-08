@@ -64,11 +64,10 @@ void process() {
 	clock_t start, diff;
 	double msec;
 
-	scanf("%d", &N);
-	printf("Sorting %1d keys\n", N);
+	//scanf("%d", &N);
+	//printf("Sorting %1d keys\n", N);
     init (128, 1000);
-
-    page_map * map = get_map();
+    N = 2048;
 
 	for(i=0; i<N; i++) put(i, lrand48 ());
 	
@@ -78,12 +77,12 @@ void process() {
 	sort(N);
     diff = clock() - start;
 
-	printf("printing array: \n");
-	printArray(N);
-	printf("doneprinting\n");
+	//printf("printing array: \n");
+	//printArray(N);
+	//printf("doneprinting\n");
 
     msec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("T1 %f ms\n", msec);
+    // printf("T1 %f ms\n", msec);
     fflush(stdout);
 
     done();
